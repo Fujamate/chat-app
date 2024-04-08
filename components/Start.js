@@ -1,4 +1,5 @@
 import { useState } from "react";
+
 import {
   StyleSheet,
   View,
@@ -6,20 +7,43 @@ import {
   TextInput,
   ImageBackground,
   TouchableOpacity,
+  Alert,
 } from "react-native";
 
+// import Firebase
+import { getAuth, signInAnonymously } from "firebase/auth";
+
 const Start = ({ navigation }) => {
+  // initialize the Firebase authentication handler
+  const auth = getAuth();
+
   // Saving the names
   const [name, setName] = useState("");
+
   // Saving the background colors
   const [backgroundColor, setBackgroundColor] = useState("");
 
   // sending the props via this handler
-  const startChatting = () => {
+  /* const startChatting = () => {
     navigation.navigate("Chat", {
       name: name,
       backgroundColor: backgroundColor,
     });
+  }; */
+
+  const signInUser = () => {
+    signInAnonymously(auth)
+      .then((result) => {
+        navigation.navigate("Chat", {
+          name: name,
+          backgroundColor: backgroundColor,
+          userID: result.user.uid,
+        });
+        Alert.alert("Signed in Successfully!");
+      })
+      .catch((error) => {
+        Alert.alert("Unable to sign in, try later again.");
+      });
   };
 
   return (
@@ -82,7 +106,7 @@ const Start = ({ navigation }) => {
         {/* Starts the Chat */}
         <TouchableOpacity
           style={styles.startChattingButton}
-          onPress={startChatting}
+          onPress={signInUser}
         >
           <Text style={styles.startChattingText}>Start Chatting</Text>
         </TouchableOpacity>
